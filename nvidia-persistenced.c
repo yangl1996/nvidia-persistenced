@@ -103,6 +103,11 @@ static NvPdStatus set_device_numa_status(NvPdDevice *device,
 NvPdStatus nvPdSetDevicePersistenceMode(int domain, int bus, int slot,
                                         int function, NvPersistenceMode mode)
 {
+    // TODO: I'm being very lazy here and just forward the call to the one that
+    // does not touch NUMA status. That part is more work to get right. See
+    // nvidia-numa.c for what needs to be done (at the minimum) and my
+    // justification of not doing it right now. 
+    return nvPdSetDevicePersistenceModeOnly(domain, bus, slot, function, mode);
     NvPdStatus ret;
     NvPersistenceMode old_mode;
     NvPdDevice *device = get_device(domain, bus, slot);

@@ -1,3 +1,24 @@
+This is a minimum viable port to FreeBSD. I needed the tool so that my Tesla P4
+and T4 cards will not stay in P0 at idle and overheat for no good reason. On
+Linux, one should set the cards in persistence mode using this tool or
+nvidia-smi -pm 1. But, on FreeBSD, this tool is not unavailable (it _is_ now
+with this port!), and nvidia-smi -pm 1 will somehow crash the cards and
+subsequent invocations of nvidia-smi will not find the cards before the server
+is rebooted. A dirty fix is to run nvidia-smi -l so that it keeps querying the
+GPUs, and they will stay in P8, but it is too janky.
+
+For now I have only implemented the bare mininum so that it works on my server
+(and probably your server as well, if you do not have a GH180 GPU or multiple
+NUMA domains). The main known side effect, which actually does not come from
+this tool or the incomplete nature of this port, is that nvidia-smi will crash
+when running in nv-sglrun (running nvidia-smi directly is fine). Guessing from
+the error message, it is because the shim implemented in nv-sglrun is
+incomplete, and a GPU set in persistence mode somehow requires nvidia-smi to
+use functions that are not implemented by the shim.
+
+Note: you need to use gmake instead of make.
+
+Below is the original README
 ______________________________________________________________________________
 
 NVIDIA-PERSISTENCED SOURCE DOCUMENTATION

@@ -78,7 +78,7 @@ char *nvvstrcat(const char *str, va_list ap)
 
     /* walk the varargs to compute the length of the result string */
 
-    va_copy(ap2, ap);
+    __va_copy(ap2, ap);
 
     for (s = str, len = 1; s; s = va_arg(ap2, char *)) {
         len += strlen(s);

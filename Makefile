@@ -96,6 +96,7 @@ common_cflags += -I .
 common_cflags += -DPROGRAM_NAME=\"$(NVIDIA_PERSISTENCED_PROGRAM_NAME)\"
 common_cflags += -D_BSD_SOURCE
 common_cflags += -D_XOPEN_SOURCE=500
+common_cflags += -D__BSD_VISIBLE
 common_cflags += -std=c99
 
 CFLAGS += $(common_cflags)

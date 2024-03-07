@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <syslog.h>
 #include <unistd.h>
@@ -92,6 +93,18 @@ static inline char* mem_state_to_string(mem_state_t state)
     }
 }
 
+// TODO: This function gets the unit number of the device, e.g., 2 in
+// /dev/nvidia2 and vgapci2. The goal of the caller is to get that dev file
+// path. The current implementation uses Linux sysfs so it does not work on
+// FreeBSD, but the same can be achieved by parsing results from pciconf -l,
+// which outputs the list of PCIe devices in the following format
+//     <type><unit number>@pci<domain>:<bus>:<device>:<function>
+// However the eventual caller wants to talk to the device file to set the NUMA
+// domain, and my server seems to only have one NUMA domain (not enabled in
+// BIOS probably), so I have not implemented it for FreeBSD and instead just
+// bypassed the entire thing of setting NUMA domain altogether (see my edits to
+// nvidia-persistenced.c). It seems to work fine without it on my machine,
+// i.e., no performance degradation.
 static
 int get_gpu_minor_number(int domain, int bus, int slot, int function,
                          int *minor_num)
@@ -924,6 +937,11 @@ NvPdStatus setup_numa_auto_online(void)
     int vendor_id, device_id;
     int status;
 
+    // TODO: commenting the following out which according to the comments only
+    // applies to GH180. Apparently now the code won't work for GH180 but
+    // fortunately (unfortunately?) I will not own one in the foreseeable
+    // future. Maybe come back and fix it properly if more cards are affected.
+    /*
     nvidia = opendir(SYSFS_NVIDIA_DIR);
     if (nvidia == NULL) {
         printf("Failed to open %s\n", SYSFS_NVIDIA_DIR);
@@ -953,6 +971,7 @@ NvPdStatus setup_numa_auto_online(void)
             return NVPD_SUCCESS;
         }
     }
+    */
 
     return NVPD_SUCCESS;
 }
